@@ -34,9 +34,9 @@ function OnSearchBoxClick(e){
             refs.countryList.innerHTML = createCountryListMarkup();
         }
     })
-    .catch((error)=>{
-        Notify.failure(error);
-    });
+    // .catch((error)=>{~
+    //     Notify.failure(error);
+    // });
 }
 
 function fff(value = ''){
