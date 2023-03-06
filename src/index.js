@@ -11,9 +11,9 @@ const refs = {
     countryInfo: document.querySelector('.country-info'),
 }
 
-refs.searchBox.addEventListener('input', debounce(OnSearchBoxClick, DEBOUNCE_DELAY));
+refs.searchBox.addEventListener('input', debounce(onSearchBoxClick, DEBOUNCE_DELAY));
 
-function OnSearchBoxClick(e){
+function onSearchBoxClick(e){
     const value = e.target.value.trim();
 
     if(value !== ''){
@@ -26,18 +26,18 @@ function OnSearchBoxClick(e){
 
 function renderResult(value){
     fetchCountries(value)
-    .then(Response => {
-        console.log(Response);
-        if(Response.length >= 10){
+    .then(response => {
+        console.log(response);
+        if(response.length >= 10){
             Notify.info('Too many matches found. Please enter a more specific name.');
         }
-        if(Response.length === 1){
+        if(response.length === 1){
             clearCountryList()
-            refs.countryInfo.innerHTML = getCountryInfoMarkup(Response);
+            refs.countryInfo.innerHTML = getCountryInfoMarkup(response);
         }
-        if(Response.length >= 2 && Response.length <= 10){
+        if(response.length >= 2 && response.length <= 10){
             clearCountryInfo();
-            refs.countryList.innerHTML = getCountryListMarkup(Response);
+            refs.countryList.innerHTML = getCountryListMarkup(response);
         }
     })
     .catch((error)=>{
@@ -45,8 +45,8 @@ function renderResult(value){
     });
 }
 
-function getCountryInfoMarkup(Response){
-    return Response.map(({flags, name, capital, population, languages})=>{
+function getCountryInfoMarkup(response){
+    return response.map(({flags, name, capital, population, languages})=>{
         return `
             <img class="country-icon" src="${flags.svg}" alt="${flags.alt}">
             <span class="country-name">${name.official}</span>
@@ -64,8 +64,8 @@ function getCountryInfoMarkup(Response){
     })
 }
 
-function getCountryListMarkup(Response){
-    return Response.map(({flags, name})=>{
+function getCountryListMarkup(response){
+    return response.map(({flags, name})=>{
         return `
         <li>
             <img class="country-icon" src="${flags.svg}" alt="${flags.alt}">
