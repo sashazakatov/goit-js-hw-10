@@ -1,16 +1,14 @@
 import debounce from 'lodash.debounce';
-import './css/styles.css';
 import {fetchCountries} from './js/fetchCountries'
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import './css/styles.css';
 
-
-const DEBOUNCE_DELAY = 0;
+const DEBOUNCE_DELAY = 300;
 
 const refs = {
     searchBox: document.querySelector('#search-box'),
     countryList: document.querySelector('.country-list'),
     countryInfo: document.querySelector('.country-info'),
-
 }
 
 refs.searchBox.addEventListener('input', debounce(OnSearchBoxClick, DEBOUNCE_DELAY));
@@ -18,39 +16,42 @@ refs.searchBox.addEventListener('input', debounce(OnSearchBoxClick, DEBOUNCE_DEL
 function OnSearchBoxClick(e){
     const value = e.target.value.trim();
 
-    // fff(value);
+    if(value !== ''){
+        renderResult(value);
+        return;
+    }
+    clearCountryList();
+    clearCountryInfo();
+}
 
+function renderResult(value){
     fetchCountries(value)
     .then(Response => {
+        console.log(Response);
         if(Response.length >= 10){
             Notify.info('Too many matches found. Please enter a more specific name.');
         }
         if(Response.length === 1){
-            refs.countryList.innerHTML = '';
-            refs.countryInfo.innerHTML = createCountryInfoMarkup();
+            clearCountryList()
+            refs.countryInfo.innerHTML = getCountryInfoMarkup(Response);
         }
         if(Response.length >= 2 && Response.length <= 10){
-            refs.countryInfo.innerHTML = '';
-            refs.countryList.innerHTML = createCountryListMarkup();
+            clearCountryInfo();
+            refs.countryList.innerHTML = getCountryListMarkup(Response);
         }
     })
-    // .catch((error)=>{~
-    //     Notify.failure(error);
-    // });
+    .catch((error)=>{
+        console.log('aaa');
+        Notify.failure(error);
+    });
 }
 
-function fff(value = ''){
-    if(value === ''){
-        refs.countryList.innerHTML = '';
-        refs.countryInfo.innerHTML = '';
-        return;
-    }
-}
-function createCountryInfoMarkup(){
-    return Response.map(({flags:{svg, alt}, name:{official}, capital, population, languages})=>{
+function getCountryInfoMarkup(Response){
+    return Response.map(({flags, name, capital, population, languages})=>{
+        console.log(languages);
         return `
-            <img width="20" height="14" src="${svg}" alt="${alt}">
-            <span>${official}</span>
+            <img width="20" height="14" src="${flags.svg}" alt="${flags.alt}">
+            <span>${name.official}</span>
             <ul>
                 <li>
                     <span>Capitl:</span> ${capital}
@@ -59,17 +60,26 @@ function createCountryInfoMarkup(){
                     <span>Population:</span> ${population}
                 </li>
                 <li>
-                    <span>Languages:</span> ${languages}
+                    <span>Languages:</span> ${Object.values(languages).join(', ')}
                 </li>
             </ul>`;
     })
 }
-function getCountryListMarkup(){
-    return Response.map(({flags:{svg, alt}, name:{official}})=>{
+
+function getCountryListMarkup(Response){
+    return Response.map(({flags, name})=>{
         return `
         <li>
-            <img width="20" height="14" src="${svg}" alt="${alt}">
-            <span>${official}</span>
+            <img width="20" height="14" src="${flags.svg}" alt="${flags.alt}">
+            <span>${name.official}</span>
         </li>`;
     }).join('');
+}
+
+function clearCountryList(){
+    refs.countryList.innerHTML = '';
+}
+
+function clearCountryInfo(){
+    refs.countryInfo.innerHTML = '';
 }
