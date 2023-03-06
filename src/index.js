@@ -41,26 +41,24 @@ function renderResult(value){
         }
     })
     .catch((error)=>{
-        console.log('aaa');
         Notify.failure(error);
     });
 }
 
 function getCountryInfoMarkup(Response){
     return Response.map(({flags, name, capital, population, languages})=>{
-        console.log(languages);
         return `
-            <img width="20" height="14" src="${flags.svg}" alt="${flags.alt}">
-            <span>${name.official}</span>
-            <ul>
+            <img class="country-icon" src="${flags.svg}" alt="${flags.alt}">
+            <span class="country-name">${name.official}</span>
+            <ul class="list">
                 <li>
-                    <span>Capitl:</span> ${capital}
+                    <span class="country-data">Capitl:</span> ${capital}
                 </li>
                 <li>
-                    <span>Population:</span> ${population}
+                    <span class="country-data">Population:</span> ${population}
                 </li>
                 <li>
-                    <span>Languages:</span> ${Object.values(languages).join(', ')}
+                    <span class="country-data">Languages:</span> ${Object.values(languages).join(',')}
                 </li>
             </ul>`;
     })
@@ -70,16 +68,16 @@ function getCountryListMarkup(Response){
     return Response.map(({flags, name})=>{
         return `
         <li>
-            <img width="20" height="14" src="${flags.svg}" alt="${flags.alt}">
+            <img class="country-icon" src="${flags.svg}" alt="${flags.alt}">
             <span>${name.official}</span>
         </li>`;
     }).join('');
 }
 
 function clearCountryList(){
-    refs.countryList.innerHTML = '';
+    refs.countryList.textContent = '';
 }
 
 function clearCountryInfo(){
-    refs.countryInfo.innerHTML = '';
+    refs.countryInfo.textContent = '';
 }
